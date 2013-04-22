@@ -1,0 +1,9 @@
+How To Create Custom Kernel Using Speedy Kernel Source For Sony Xperia:
+------------------------------------------------
+1. Clone Toolchains (or you can use your own toolchains): git clone https://github.com/Divaksh/Toolchains.git
+2. In terminal "cd" to source code directory.
+3. execute "Make*.sh" to create your boot.img and CWM flashable file
+	A. Xperia P => MakeP.sh
+	B. Xperia U => MakeU.sh
+	C. Xperia Sola => MakeSola.sh
+	D. Xperia Go => MakeGo.sh
