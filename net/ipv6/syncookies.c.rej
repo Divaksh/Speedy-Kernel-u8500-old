@@ -1,0 +1,11 @@
+--- net/ipv6/syncookies.c
++++ net/ipv6/syncookies.c
+@@ -165,7 +165,7 @@
+ 	int mss;
+ 	struct dst_entry *dst;
+ 	__u8 rcv_wscale;
+-	bool ecn_ok;
++	bool ecn_ok = false;
+ 
+ 	if (!sysctl_tcp_syncookies || !th->ack || th->rst)
+ 		goto out;

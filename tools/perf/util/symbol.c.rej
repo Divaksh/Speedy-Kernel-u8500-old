@@ -1,0 +1,11 @@
+--- tools/perf/util/symbol.c
++++ tools/perf/util/symbol.c
+@@ -1111,6 +1111,8 @@
+ 	}
+ 
+ 	opdsec = elf_section_by_name(elf, &ehdr, &opdshdr, ".opd", &opdidx);
++	if (opdshdr.sh_type != SHT_PROGBITS)
++		opdsec = NULL;
+ 	if (opdsec)
+ 		opddata = elf_rawdata(opdsec, NULL);
+ 

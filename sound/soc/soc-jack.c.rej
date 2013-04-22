@@ -1,0 +1,20 @@
+--- sound/soc/soc-jack.c
++++ sound/soc/soc-jack.c
+@@ -105,7 +105,7 @@
+ 
+ 	snd_soc_dapm_sync(dapm);
+ 
+-	snd_jack_report(jack->jack, status);
++	snd_jack_report(jack->jack, jack->status);
+ 
+ out:
+ 	mutex_unlock(&codec->mutex);
+@@ -327,7 +327,7 @@
+ 					      IRQF_TRIGGER_FALLING,
+ 					      gpios[i].name,
+ 					      &gpios[i]);
+-		if (ret)
++		if (ret < 0)
+ 			goto err;
+ 
+ 		if (gpios[i].wake) {

@@ -1,0 +1,20 @@
+--- sound/soc/blackfin/bf5xx-ad193x.c
++++ sound/soc/blackfin/bf5xx-ad193x.c
+@@ -103,7 +103,7 @@
+ 		.cpu_dai_name = "bfin-tdm.0",
+ 		.codec_dai_name ="ad193x-hifi",
+ 		.platform_name = "bfin-tdm-pcm-audio",
+-		.codec_name = "ad193x.5",
++		.codec_name = "spi0.5",
+ 		.ops = &bf5xx_ad193x_ops,
+ 	},
+ 	{
+@@ -112,7 +112,7 @@
+ 		.cpu_dai_name = "bfin-tdm.1",
+ 		.codec_dai_name ="ad193x-hifi",
+ 		.platform_name = "bfin-tdm-pcm-audio",
+-		.codec_name = "ad193x.5",
++		.codec_name = "spi0.5",
+ 		.ops = &bf5xx_ad193x_ops,
+ 	},
+ };

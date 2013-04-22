@@ -1,0 +1,15 @@
+--- drivers/net/wan/hdlc_fr.c
++++ drivers/net/wan/hdlc_fr.c
+@@ -1083,9 +1083,10 @@
+ 
+ 	used = pvc_is_used(pvc);
+ 
+-	if (type == ARPHRD_ETHER)
++	if (type == ARPHRD_ETHER) {
+ 		dev = alloc_netdev(0, "pvceth%d", ether_setup);
+-	else
++		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
++	} else
+ 		dev = alloc_netdev(0, "pvc%d", pvc_setup);
+ 
+ 	if (!dev) {

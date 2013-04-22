@@ -1,0 +1,10 @@
+--- net/netfilter/ipvs/ip_vs_ctl.c
++++ net/netfilter/ipvs/ip_vs_ctl.c
+@@ -3773,6 +3775,7 @@
+ void ip_vs_control_cleanup(void)
+ {
+ 	EnterFunction(2);
++	unregister_netdevice_notifier(&ip_vs_dst_notifier);
+ 	ip_vs_genl_unregister();
+ 	nf_unregister_sockopt(&ip_vs_sockopts);
+ 	LeaveFunction(2);

@@ -1,0 +1,10 @@
+--- drivers/mfd/omap-usb-host.c
++++ drivers/mfd/omap-usb-host.c
+@@ -676,7 +676,6 @@
+ 				| OMAP_TLL_CHANNEL_CONF_ULPINOBITSTUFF
+ 				| OMAP_TLL_CHANNEL_CONF_ULPIDDRMODE);
+ 
+-			reg |= (1 << (i + 1));
+ 		} else
+ 			continue;
+ 

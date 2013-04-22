@@ -1,0 +1,84 @@
+--- drivers/rtc/interface.c
++++ drivers/rtc/interface.c
+@@ -674,21 +697,21 @@
+ 	int err = 0;
+ 	unsigned long flags;
+ 
++retry:
+ 	spin_lock_irqsave(&rtc->irq_task_lock, flags);
+ 	if (rtc->irq_task != NULL && task == NULL)
+ 		err = -EBUSY;
+ 	if (rtc->irq_task != task)
+ 		err = -EACCES;
+-
+-	if (enabled) {
+-		ktime_t period = ktime_set(0, NSEC_PER_SEC/rtc->irq_freq);
+-		hrtimer_start(&rtc->pie_timer, period, HRTIMER_MODE_REL);
+-	} else {
+-		hrtimer_cancel(&rtc->pie_timer);
++	if (!err) {
++		if (rtc_update_hrtimer(rtc, enabled) < 0) {
++			spin_unlock_irqrestore(&rtc->irq_task_lock, flags);
++			cpu_relax();
++			goto retry;
++		}
++		rtc->pie_enabled = enabled;
+ 	}
+-	rtc->pie_enabled = enabled;
+ 	spin_unlock_irqrestore(&rtc->irq_task_lock, flags);
+-
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(rtc_irq_set_state);
+@@ -708,22 +731,20 @@
+ 	int err = 0;
+ 	unsigned long flags;
+ 
+-	if (freq <= 0)
++	if (freq <= 0 || freq > RTC_MAX_FREQ)
+ 		return -EINVAL;
+-
++retry:
+ 	spin_lock_irqsave(&rtc->irq_task_lock, flags);
+ 	if (rtc->irq_task != NULL && task == NULL)
+ 		err = -EBUSY;
+ 	if (rtc->irq_task != task)
+ 		err = -EACCES;
+-	if (err == 0) {
++	if (!err) {
+ 		rtc->irq_freq = freq;
+-		if (rtc->pie_enabled) {
+-			ktime_t period;
+-			hrtimer_cancel(&rtc->pie_timer);
+-			period = ktime_set(0, NSEC_PER_SEC/rtc->irq_freq);
+-			hrtimer_start(&rtc->pie_timer, period,
+-					HRTIMER_MODE_REL);
++		if (rtc->pie_enabled && rtc_update_hrtimer(rtc, 1) < 0) {
++			spin_unlock_irqrestore(&rtc->irq_task_lock, flags);
++			cpu_relax();
++			goto retry;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&rtc->irq_task_lock, flags);
+@@ -793,8 +822,10 @@
+ 		struct rtc_wkalrm alarm;
+ 		int err;
+ 		next = timerqueue_getnext(&rtc->timerqueue);
+-		if (!next)
++		if (!next) {
++			rtc_alarm_disable(rtc);
+ 			return;
++		}
+ 		alarm.time = rtc_ktime_to_tm(next->expires);
+ 		alarm.enabled = 1;
+ 		err = __rtc_set_alarm(rtc, &alarm);
+@@ -856,7 +887,8 @@
+ 		err = __rtc_set_alarm(rtc, &alarm);
+ 		if (err == -ETIME)
+ 			goto again;
+-	}
++	} else
++		rtc_alarm_disable(rtc);
+ 
+ 	mutex_unlock(&rtc->ops_lock);
+ }

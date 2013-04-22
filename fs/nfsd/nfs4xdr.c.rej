@@ -1,0 +1,20 @@
+--- fs/nfsd/nfs4xdr.c
++++ fs/nfsd/nfs4xdr.c
+@@ -2682,11 +2694,16 @@
+ 	len = maxcount;
+ 	v = 0;
+ 	while (len > 0) {
+-		pn = resp->rqstp->rq_resused++;
++		pn = resp->rqstp->rq_resused;
++		if (!resp->rqstp->rq_respages[pn]) { /* ran out of pages */
++			maxcount -= len;
++			break;
++		}
+ 		resp->rqstp->rq_vec[v].iov_base =
+ 			page_address(resp->rqstp->rq_respages[pn]);
+ 		resp->rqstp->rq_vec[v].iov_len =
+ 			len < PAGE_SIZE ? len : PAGE_SIZE;
++		resp->rqstp->rq_resused++;
+ 		v++;
+ 		len -= PAGE_SIZE;
+ 	}

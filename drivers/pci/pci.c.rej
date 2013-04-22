@@ -1,0 +1,23 @@
+--- drivers/pci/pci.c
++++ drivers/pci/pci.c
+@@ -1905,7 +1905,7 @@
+ {
+ 	int pos;
+ 	u32 cap;
+-	u16 ctrl;
++	u16 flags, ctrl;
+ 	struct pci_dev *bridge;
+ 
+ 	if (!pci_is_pcie(dev) || dev->devfn)
+@@ -1923,6 +1923,11 @@
+ 	if (!pos)
+ 		return;
+ 
++	/* ARI is a PCIe v2 feature */
++	pci_read_config_word(bridge, pos + PCI_EXP_FLAGS, &flags);
++	if ((flags & PCI_EXP_FLAGS_VERS) < 2)
++		return;
++
+ 	pci_read_config_dword(bridge, pos + PCI_EXP_DEVCAP2, &cap);
+ 	if (!(cap & PCI_EXP_DEVCAP2_ARI))
+ 		return;

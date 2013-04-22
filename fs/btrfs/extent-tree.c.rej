@@ -1,0 +1,11 @@
+--- fs/btrfs/extent-tree.c
++++ fs/btrfs/extent-tree.c
+@@ -3778,7 +3770,7 @@
+ 	spin_lock(&block_rsv->lock);
+ 	spin_lock(&sinfo->lock);
+ 
+-	block_rsv->size = min_t(u64, num_bytes, 512 * 1024 * 1024);
++	block_rsv->size = num_bytes;
+ 
+ 	num_bytes = sinfo->bytes_used + sinfo->bytes_pinned +
+ 		    sinfo->bytes_reserved + sinfo->bytes_readonly +

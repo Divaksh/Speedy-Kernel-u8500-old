@@ -1,0 +1,21 @@
+--- drivers/md/raid10.c
++++ drivers/md/raid10.c
+@@ -2350,7 +2369,7 @@
+ 	return 0;
+ 
+ out_free_conf:
+-	md_unregister_thread(mddev->thread);
++	md_unregister_thread(&mddev->thread);
+ 	if (conf->r10bio_pool)
+ 		mempool_destroy(conf->r10bio_pool);
+ 	safe_put_page(conf->tmppage);
+@@ -2368,8 +2387,7 @@
+ 	raise_barrier(conf, 0);
+ 	lower_barrier(conf);
+ 
+-	md_unregister_thread(mddev->thread);
+-	mddev->thread = NULL;
++	md_unregister_thread(&mddev->thread);
+ 	blk_sync_queue(mddev->queue); /* the unplug fn references 'conf'*/
+ 	if (conf->r10bio_pool)
+ 		mempool_destroy(conf->r10bio_pool);

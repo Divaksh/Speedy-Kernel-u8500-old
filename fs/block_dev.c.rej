@@ -1,0 +1,10 @@
+--- fs/block_dev.c
++++ fs/block_dev.c
+@@ -576,7 +576,6 @@
+ 	ihold(bdev->bd_inode);
+ 	return bdev;
+ }
+-EXPORT_SYMBOL(bdgrab);
+ 
+ long nr_blockdev_pages(void)
+ {

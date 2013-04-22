@@ -1,0 +1,88 @@
+--- mm/vmscan.c
++++ mm/vmscan.c
+@@ -1849,22 +1951,16 @@
+ 	u64 fraction[2], denominator;
+ 	enum lru_list l;
+ 	int noswap = 0;
+-	int force_scan = 0;
+-
+-
+-	anon  = zone_nr_lru_pages(zone, sc, LRU_ACTIVE_ANON) +
+-		zone_nr_lru_pages(zone, sc, LRU_INACTIVE_ANON);
+-	file  = zone_nr_lru_pages(zone, sc, LRU_ACTIVE_FILE) +
+-		zone_nr_lru_pages(zone, sc, LRU_INACTIVE_FILE);
+-
+-	if (((anon + file) >> priority) < SWAP_CLUSTER_MAX) {
+-		/* kswapd does zone balancing and need to scan this zone */
+-		if (scanning_global_lru(sc) && current_is_kswapd())
+-			force_scan = 1;
+-		/* memcg may have small limit and need to avoid priority drop */
+-		if (!scanning_global_lru(sc))
+-			force_scan = 1;
+-	}
++	bool force_scan = false;
++	unsigned long nr_force_scan[2];
++
++	/* kswapd does zone balancing and needs to scan this zone */
++	if (scanning_global_lru(sc) && current_is_kswapd() &&
++	    zone->all_unreclaimable)
++		force_scan = true;
++	/* memcg may have small limit and need to avoid priority drop */
++	if (!scanning_global_lru(sc))
++		force_scan = true;
+ 
+ 	/* If we have no swap space, do not bother scanning anon pages. */
+ 	if (!sc->may_swap || (nr_swap_pages <= 0)) {
+@@ -1872,9 +1968,16 @@
+ 		fraction[0] = 0;
+ 		fraction[1] = 1;
+ 		denominator = 1;
++		nr_force_scan[0] = 0;
++		nr_force_scan[1] = SWAP_CLUSTER_MAX;
+ 		goto out;
+ 	}
+ 
++	anon  = zone_nr_lru_pages(zone, sc, LRU_ACTIVE_ANON) +
++		zone_nr_lru_pages(zone, sc, LRU_INACTIVE_ANON);
++	file  = zone_nr_lru_pages(zone, sc, LRU_ACTIVE_FILE) +
++		zone_nr_lru_pages(zone, sc, LRU_INACTIVE_FILE);
++
+ 	if (scanning_global_lru(sc)) {
+ 		free  = zone_page_state(zone, NR_FREE_PAGES);
+ 		/* If we have very few page cache pages,
+@@ -1883,6 +1986,8 @@
+ 			fraction[0] = 1;
+ 			fraction[1] = 0;
+ 			denominator = 1;
++			nr_force_scan[0] = SWAP_CLUSTER_MAX;
++			nr_force_scan[1] = 0;
+ 			goto out;
+ 		}
+ 	}
+@@ -1931,6 +2036,11 @@
+ 	fraction[0] = ap;
+ 	fraction[1] = fp;
+ 	denominator = ap + fp + 1;
++	if (force_scan) {
++		unsigned long scan = SWAP_CLUSTER_MAX;
++		nr_force_scan[0] = div64_u64(scan * ap, denominator);
++		nr_force_scan[1] = div64_u64(scan * fp, denominator);
++	}
+ out:
+ 	for_each_evictable_lru(l) {
+ 		int file = is_file_lru(l);
+@@ -1951,12 +2061,8 @@
+ 		 * memcg, priority drop can cause big latency. So, it's better
+ 		 * to scan small amount. See may_noscan above.
+ 		 */
+-		if (!scan && force_scan) {
+-			if (file)
+-				scan = SWAP_CLUSTER_MAX;
+-			else if (!noswap)
+-				scan = SWAP_CLUSTER_MAX;
+-		}
++		if (!scan && force_scan)
++			scan = nr_force_scan[file];
+ 		nr[l] = scan;
+ 	}
+ }

@@ -1,0 +1,28 @@
+--- fs/ubifs/super.c
++++ fs/ubifs/super.c
+@@ -1583,12 +1583,6 @@
+ 	c->remounting_rw = 1;
+ 	c->ro_mount = 0;
+ 
+-	if (c->space_fixup) {
+-		err = ubifs_fixup_free_space(c);
+-		if (err)
+-			return err;
+-	}
+-
+ 	err = check_free_space(c);
+ 	if (err)
+ 		goto out;
+@@ -1705,6 +1699,12 @@
+ 		err = dbg_check_space_info(c);
+ 	}
+ 
++	if (c->space_fixup) {
++		err = ubifs_fixup_free_space(c);
++		if (err)
++			goto out;
++	}
++
+ 	mutex_unlock(&c->umount_mutex);
+ 	return err;
+ 

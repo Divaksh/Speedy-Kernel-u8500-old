@@ -1,0 +1,12 @@
+--- drivers/net/wireless/ath/ath9k/mac.c
++++ drivers/net/wireless/ath/ath9k/mac.c
+@@ -645,8 +645,7 @@
+ 			rs->rs_status |= ATH9K_RXERR_DECRYPT;
+ 		else if (ads.ds_rxstatus8 & AR_MichaelErr)
+ 			rs->rs_status |= ATH9K_RXERR_MIC;
+-
+-		if (ads.ds_rxstatus8 & AR_KeyMiss)
++		else if (ads.ds_rxstatus8 & AR_KeyMiss)
+ 			rs->rs_status |= ATH9K_RXERR_DECRYPT;
+ 	}
+ 

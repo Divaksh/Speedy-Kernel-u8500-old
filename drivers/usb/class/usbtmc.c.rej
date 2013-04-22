@@ -1,0 +1,11 @@
+--- drivers/usb/class/usbtmc.c
++++ drivers/usb/class/usbtmc.c
+@@ -268,7 +268,7 @@
+ 				dev_err(dev, "usb_bulk_msg returned %d\n", rv);
+ 				goto exit;
+ 			}
+-		} while ((actual = max_size) &&
++		} while ((actual == max_size) &&
+ 			 (n < USBTMC_MAX_READS_TO_CLEAR_BULK_IN));
+ 
+ 	if (actual == max_size) {

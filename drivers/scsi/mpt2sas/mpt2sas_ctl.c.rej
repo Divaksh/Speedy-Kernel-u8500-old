@@ -1,0 +1,21 @@
+--- drivers/scsi/mpt2sas/mpt2sas_ctl.c
++++ drivers/scsi/mpt2sas/mpt2sas_ctl.c
+@@ -2706,13 +2706,13 @@
+     _ctl_ioc_reset_count_show, NULL);
+ 
+ struct DIAG_BUFFER_START {
+-	u32 Size;
+-	u32 DiagVersion;
++	__le32 Size;
++	__le32 DiagVersion;
+ 	u8 BufferType;
+ 	u8 Reserved[3];
+-	u32 Reserved1;
+-	u32 Reserved2;
+-	u32 Reserved3;
++	__le32 Reserved1;
++	__le32 Reserved2;
++	__le32 Reserved3;
+ };
+ /**
+  * _ctl_host_trace_buffer_size_show - host buffer size (trace only)

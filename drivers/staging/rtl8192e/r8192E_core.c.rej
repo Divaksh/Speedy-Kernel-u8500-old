@@ -1,0 +1,22 @@
+--- drivers/staging/rtl8192e/r8192E_core.c
++++ drivers/staging/rtl8192e/r8192E_core.c
+@@ -4532,6 +4532,7 @@
+ 	u8 unit = 0;
+ 	int ret = -ENODEV;
+ 	unsigned long pmem_start, pmem_len, pmem_flags;
++	u8 revisionid;
+ 
+ 	RT_TRACE(COMP_INIT,"Configuring chip resources\n");
+ 
+@@ -4592,6 +4593,11 @@
+          pci_write_config_byte(pdev, 0x41, 0x00);
+ 
+ 
++	pci_read_config_byte(pdev, 0x08, &revisionid);
++	/* If the revisionid is 0x10, the device uses rtl8192se. */
++	if (pdev->device == 0x8192 && revisionid == 0x10)
++		goto fail1;
++
+ 	pci_read_config_byte(pdev, 0x05, &unit);
+ 	pci_write_config_byte(pdev, 0x05, unit & (~0x04));
+ 

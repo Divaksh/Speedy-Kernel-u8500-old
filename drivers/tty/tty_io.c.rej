@@ -1,0 +1,12 @@
+--- drivers/tty/tty_io.c
++++ drivers/tty/tty_io.c
+@@ -1313,8 +1332,7 @@
+  *
+  *	Locking: tty_mutex for now
+  */
+-static void tty_driver_remove_tty(struct tty_driver *driver,
+-						struct tty_struct *tty)
++void tty_driver_remove_tty(struct tty_driver *driver, struct tty_struct *tty)
+ {
+ 	if (driver->ops->remove)
+ 		driver->ops->remove(driver, tty);

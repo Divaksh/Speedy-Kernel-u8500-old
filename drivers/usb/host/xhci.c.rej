@@ -1,0 +1,222 @@
+--- drivers/usb/host/xhci.c
++++ drivers/usb/host/xhci.c
+@@ -348,7 +351,8 @@
+ 	spin_lock_irqsave(&xhci->lock, flags);
+ 	temp = xhci_readl(xhci, &xhci->op_regs->status);
+ 	xhci_dbg(xhci, "op reg status = 0x%x\n", temp);
+-	if (temp == 0xffffffff || (xhci->xhc_state & XHCI_STATE_DYING)) {
++	if (temp == 0xffffffff || (xhci->xhc_state & XHCI_STATE_DYING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
+ 		xhci_dbg(xhci, "HW died, polling stopped.\n");
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+ 		return;
+@@ -954,8 +970,11 @@
+ 		return 0;
+ 	}
+ 
++	xhci = hcd_to_xhci(hcd);
++	if (xhci->xhc_state & XHCI_STATE_HALTED)
++		return -ENODEV;
++
+ 	if (check_virt_dev) {
+-		xhci = hcd_to_xhci(hcd);
+ 		if (!udev->slot_id || !xhci->devs
+ 			|| !xhci->devs[udev->slot_id]) {
+ 			printk(KERN_DEBUG "xHCI %s called with unaddressed "
+@@ -1096,8 +1115,11 @@
+ 		if (urb->dev->speed == USB_SPEED_FULL) {
+ 			ret = xhci_check_maxpacket(xhci, slot_id,
+ 					ep_index, urb);
+-			if (ret < 0)
++			if (ret < 0) {
++				xhci_urb_free_priv(xhci, urb_priv);
++				urb->hcpriv = NULL;
+ 				return ret;
++			}
+ 		}
+ 
+ 		/* We have a spinlock and interrupts disabled, so we must pass
+@@ -1108,6 +1130,8 @@
+ 			goto dying;
+ 		ret = xhci_queue_ctrl_tx(xhci, GFP_ATOMIC, urb,
+ 				slot_id, ep_index);
++		if (ret)
++			goto free_priv;
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+ 	} else if (usb_endpoint_xfer_bulk(&urb->ep->desc)) {
+ 		spin_lock_irqsave(&xhci->lock, flags);
+@@ -1137,6 +1163,8 @@
+ 			goto dying;
+ 		ret = xhci_queue_intr_tx(xhci, GFP_ATOMIC, urb,
+ 				slot_id, ep_index);
++		if (ret)
++			goto free_priv;
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+ 	} else {
+ 		spin_lock_irqsave(&xhci->lock, flags);
+@@ -1144,18 +1172,22 @@
+ 			goto dying;
+ 		ret = xhci_queue_isoc_tx_prepare(xhci, GFP_ATOMIC, urb,
+ 				slot_id, ep_index);
++		if (ret)
++			goto free_priv;
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+ 	}
+ exit:
+ 	return ret;
+ dying:
+-	xhci_urb_free_priv(xhci, urb_priv);
+-	urb->hcpriv = NULL;
+ 	xhci_dbg(xhci, "Ep 0x%x: URB %p submitted for "
+ 			"non-responsive xHCI host.\n",
+ 			urb->ep->desc.bEndpointAddress, urb);
++	ret = -ESHUTDOWN;
++free_priv:
++	xhci_urb_free_priv(xhci, urb_priv);
++	urb->hcpriv = NULL;
+ 	spin_unlock_irqrestore(&xhci->lock, flags);
+-	return -ESHUTDOWN;
++	return ret;
+ }
+ 
+ /* Get the right ring for the given URB.
+@@ -1252,6 +1284,13 @@
+ 	if (temp == 0xffffffff || (xhci->xhc_state & XHCI_STATE_HALTED)) {
+ 		xhci_dbg(xhci, "HW died, freeing TD.\n");
+ 		urb_priv = urb->hcpriv;
++		for (i = urb_priv->td_cnt; i < urb_priv->length; i++) {
++			td = urb_priv->td[i];
++			if (!list_empty(&td->td_list))
++				list_del_init(&td->td_list);
++			if (!list_empty(&td->cancelled_td_list))
++				list_del_init(&td->cancelled_td_list);
++		}
+ 
+ 		usb_hcd_unlink_urb_from_ep(hcd, urb);
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+@@ -1259,7 +1298,8 @@
+ 		xhci_urb_free_priv(xhci, urb_priv);
+ 		return ret;
+ 	}
+-	if (xhci->xhc_state & XHCI_STATE_DYING) {
++	if ((xhci->xhc_state & XHCI_STATE_DYING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
+ 		xhci_dbg(xhci, "Ep 0x%x: URB %p to be canceled on "
+ 				"non-responsive xHCI host.\n",
+ 				urb->ep->desc.bEndpointAddress, urb);
+@@ -1558,6 +1598,7 @@
+ 		/* FIXME: can we allocate more resources for the HC? */
+ 		break;
+ 	case COMP_BW_ERR:
++	case COMP_2ND_BW_ERR:
+ 		dev_warn(&udev->dev, "Not enough bandwidth "
+ 				"for new device state.\n");
+ 		ret = -ENOSPC;
+@@ -1754,6 +1795,7 @@
+ 	struct completion *cmd_completion;
+ 	u32 *cmd_status;
+ 	struct xhci_virt_device *virt_dev;
++	union xhci_trb *cmd_trb;
+ 
+ 	spin_lock_irqsave(&xhci->lock, flags);
+ 	virt_dev = xhci->devs[udev->slot_id];
+@@ -1796,6 +1838,7 @@
+ 	}
+ 	init_completion(cmd_completion);
+ 
++	cmd_trb = xhci->cmd_ring->dequeue;
+ 	if (!ctx_change)
+ 		ret = xhci_queue_configure_endpoint(xhci, in_ctx->dma,
+ 				udev->slot_id, must_succeed);
+@@ -1817,14 +1860,17 @@
+ 	/* Wait for the configure endpoint command to complete */
+ 	timeleft = wait_for_completion_interruptible_timeout(
+ 			cmd_completion,
+-			USB_CTRL_SET_TIMEOUT);
++			XHCI_CMD_DEFAULT_TIMEOUT);
+ 	if (timeleft <= 0) {
+ 		xhci_warn(xhci, "%s while waiting for %s command\n",
+ 				timeleft == 0 ? "Timeout" : "Signal",
+ 				ctx_change == 0 ?
+ 					"configure endpoint" :
+ 					"evaluate context");
+-		/* FIXME cancel the configure endpoint command */
++		/* cancel the configure endpoint command */
++		ret = xhci_cancel_cmd(xhci, command, cmd_trb);
++		if (ret < 0)
++			return ret;
+ 		return -ETIME;
+ 	}
+ 
+@@ -1881,6 +1927,12 @@
+ 	ctrl_ctx->add_flags |= cpu_to_le32(SLOT_FLAG);
+ 	ctrl_ctx->add_flags &= cpu_to_le32(~EP0_FLAG);
+ 	ctrl_ctx->drop_flags &= cpu_to_le32(~(SLOT_FLAG | EP0_FLAG));
++
++	/* Don't issue the command if there's no endpoints to update. */
++	if (ctrl_ctx->add_flags == cpu_to_le32(SLOT_FLAG) &&
++			ctrl_ctx->drop_flags == 0)
++		return 0;
++
+ 	xhci_dbg(xhci, "New Input Control Context:\n");
+ 	slot_ctx = xhci_get_slot_ctx(xhci, virt_dev->in_ctx);
+ 	xhci_dbg_ctx(xhci, virt_dev->in_ctx,
+@@ -2167,8 +2219,7 @@
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		max_streams = USB_SS_MAX_STREAMS(
+-				eps[i]->ss_ep_comp.bmAttributes);
++		max_streams = usb_ss_max_streams(&eps[i]->ss_ep_comp);
+ 		if (max_streams < (*num_streams - 1)) {
+ 			xhci_dbg(xhci, "Ep 0x%x only supports %u stream IDs.\n",
+ 					eps[i]->desc.bEndpointAddress,
+@@ -2684,7 +2735,10 @@
+ 	int i, ret;
+ 
+ 	ret = xhci_check_args(hcd, udev, NULL, 0, true, __func__);
+-	if (ret <= 0)
++	/* If the host is halted due to driver unload, we still need to free the
++	 * device.
++	 */
++	if (ret <= 0 && ret != -ENODEV)
+ 		return;
+ 
+ 	virt_dev = xhci->devs[udev->slot_id];
+@@ -2698,7 +2752,8 @@
+ 	spin_lock_irqsave(&xhci->lock, flags);
+ 	/* Don't disable the slot if the host controller is dead. */
+ 	state = xhci_readl(xhci, &xhci->op_regs->status);
+-	if (state == 0xffffffff || (xhci->xhc_state & XHCI_STATE_DYING)) {
++	if (state == 0xffffffff || (xhci->xhc_state & XHCI_STATE_DYING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
+ 		xhci_free_virt_device(xhci, udev->slot_id);
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+ 		return;
+@@ -2748,8 +2803,10 @@
+ 	unsigned long flags;
+ 	int timeleft;
+ 	int ret;
++	union xhci_trb *cmd_trb;
+ 
+ 	spin_lock_irqsave(&xhci->lock, flags);
++	cmd_trb = xhci->cmd_ring->dequeue;
+ 	ret = xhci_queue_slot_control(xhci, TRB_ENABLE_SLOT, 0);
+ 	if (ret) {
+ 		spin_unlock_irqrestore(&xhci->lock, flags);
+@@ -2761,12 +2818,12 @@
+ 
+ 	/* XXX: how much time for xHC slot assignment? */
+ 	timeleft = wait_for_completion_interruptible_timeout(&xhci->addr_dev,
+-			USB_CTRL_SET_TIMEOUT);
++			XHCI_CMD_DEFAULT_TIMEOUT);
+ 	if (timeleft <= 0) {
+ 		xhci_warn(xhci, "%s while waiting for a slot\n",
+ 				timeleft == 0 ? "Timeout" : "Signal");
+-		/* FIXME cancel the enable slot request */
+-		return 0;
++		/* cancel the enable slot request */
++		return xhci_cancel_cmd(xhci, NULL, cmd_trb);
+ 	}
+ 
+ 	if (!xhci->slot_id) {

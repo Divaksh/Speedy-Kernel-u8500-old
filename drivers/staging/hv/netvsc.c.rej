@@ -1,0 +1,20 @@
+--- drivers/staging/hv/netvsc.c
++++ drivers/staging/hv/netvsc.c
+@@ -270,7 +270,7 @@
+ 		goto cleanup;
+ 	}
+ 
+-	t = wait_for_completion_timeout(&net_device->channel_init_wait, HZ);
++	t = wait_for_completion_timeout(&net_device->channel_init_wait, 5*HZ);
+ 	BUG_ON(t == 0);
+ 
+ 
+@@ -513,7 +513,7 @@
+ 	if (ret != 0)
+ 		goto cleanup;
+ 
+-	t = wait_for_completion_timeout(&net_device->channel_init_wait, HZ);
++	t = wait_for_completion_timeout(&net_device->channel_init_wait, 5*HZ);
+ 
+ 	if (t == 0) {
+ 		ret = -ETIMEDOUT;

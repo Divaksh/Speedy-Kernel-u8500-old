@@ -1,0 +1,20 @@
+--- drivers/net/wireless/iwlegacy/iwl-core.c
++++ drivers/net/wireless/iwlegacy/iwl-core.c
+@@ -938,7 +938,7 @@
+ 					&priv->contexts[IWL_RXON_CTX_BSS]);
+ #endif
+ 
+-	wake_up_interruptible(&priv->wait_command_queue);
++	wake_up(&priv->wait_command_queue);
+ 
+ 	/* Keep the restart process from trying to send host
+ 	 * commands by clearing the INIT status bit */
+@@ -1776,7 +1776,7 @@
+ 		IWL_ERR(priv, "On demand firmware reload\n");
+ 		/* Set the FW error flag -- cleared on iwl_down */
+ 		set_bit(STATUS_FW_ERROR, &priv->status);
+-		wake_up_interruptible(&priv->wait_command_queue);
++		wake_up(&priv->wait_command_queue);
+ 		/*
+ 		 * Keep the restart process from trying to send host
+ 		 * commands by clearing the INIT status bit

@@ -1,0 +1,10 @@
+--- drivers/net/wireless/airo.c
++++ drivers/net/wireless/airo.c
+@@ -2823,6 +2823,7 @@
+ 	dev->wireless_data = &ai->wireless_data;
+ 	dev->irq = irq;
+ 	dev->base_addr = port;
++	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+ 
+ 	SET_NETDEV_DEV(dev, dmdev);
+ 

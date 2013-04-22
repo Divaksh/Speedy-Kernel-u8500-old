@@ -1,0 +1,10 @@
+--- drivers/net/bnx2x/bnx2x_dcb.c
++++ drivers/net/bnx2x/bnx2x_dcb.c
+@@ -1858,6 +1858,7 @@
+ 			break;
+ 		case DCB_CAP_ATTR_DCBX:
+ 			*cap = BNX2X_DCBX_CAPS;
++			break;
+ 		default:
+ 			rval = -EINVAL;
+ 			break;

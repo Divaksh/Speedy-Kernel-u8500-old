@@ -1,0 +1,49 @@
+--- drivers/usb/host/xhci-ring.c
++++ drivers/usb/host/xhci-ring.c
+@@ -2029,8 +2340,12 @@
+ 	/* handle completion code */
+ 	switch (trb_comp_code) {
+ 	case COMP_SUCCESS:
+-		frame->status = 0;
+-		break;
++		if (EVENT_TRB_LEN(le32_to_cpu(event->transfer_len)) == 0) {
++			frame->status = 0;
++			break;
++		}
++		if ((xhci->quirks & XHCI_TRUST_TX_LENGTH))
++			trb_comp_code = COMP_SHORT_TX;
+ 	case COMP_SHORT_TX:
+ 		frame->status = td->urb->transfer_flags & URB_SHORT_NOT_OK ?
+ 				-EREMOTEIO : 0;
+@@ -2129,13 +2445,16 @@
+ 	switch (trb_comp_code) {
+ 	case COMP_SUCCESS:
+ 		/* Double check that the HW transferred everything. */
+-		if (event_trb != td->last_trb) {
++		if (event_trb != td->last_trb ||
++		    EVENT_TRB_LEN(le32_to_cpu(event->transfer_len)) != 0) {
+ 			xhci_warn(xhci, "WARN Successful completion "
+ 					"on short TX\n");
+ 			if (td->urb->transfer_flags & URB_SHORT_NOT_OK)
+ 				*status = -EREMOTEIO;
+ 			else
+ 				*status = 0;
++			if ((xhci->quirks & XHCI_TRUST_TX_LENGTH))
++				trb_comp_code = COMP_SHORT_TX;
+ 		} else {
+ 			*status = 0;
+ 		}
+@@ -2276,6 +2603,13 @@
+ 	 * transfer type
+ 	 */
+ 	case COMP_SUCCESS:
++		if (EVENT_TRB_LEN(le32_to_cpu(event->transfer_len)) == 0)
++			break;
++		if (xhci->quirks & XHCI_TRUST_TX_LENGTH)
++			trb_comp_code = COMP_SHORT_TX;
++		else
++			xhci_warn(xhci, "WARN Successful completion on short TX: "
++					"needs XHCI_TRUST_TX_LENGTH quirk?\n");
+ 	case COMP_SHORT_TX:
+ 		break;
+ 	case COMP_STOP:

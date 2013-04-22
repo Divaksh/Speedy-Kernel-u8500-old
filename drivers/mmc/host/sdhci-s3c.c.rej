@@ -1,0 +1,11 @@
+--- drivers/mmc/host/sdhci-s3c.c
++++ drivers/mmc/host/sdhci-s3c.c
+@@ -589,7 +591,7 @@
+ 
+ 	sdhci_remove_host(host, 1);
+ 
+-	for (ptr = 0; ptr < 3; ptr++) {
++	for (ptr = 0; ptr < MAX_BUS_CLK; ptr++) {
+ 		if (sc->clk_bus[ptr]) {
+ 			clk_disable(sc->clk_bus[ptr]);
+ 			clk_put(sc->clk_bus[ptr]);

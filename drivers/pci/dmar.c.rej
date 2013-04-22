@@ -1,0 +1,11 @@
+--- drivers/pci/dmar.c
++++ drivers/pci/dmar.c
+@@ -1388,7 +1388,7 @@
+ 		return ret;
+ 	}
+ 
+-	ret = request_irq(irq, dmar_fault, 0, iommu->name, iommu);
++	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
+ 	if (ret)
+ 		printk(KERN_ERR "IOMMU: can't request irq\n");
+ 	return ret;

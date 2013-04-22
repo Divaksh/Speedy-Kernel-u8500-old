@@ -1,0 +1,29 @@
+--- sound/soc/fsl/mpc5200_dma.c
++++ sound/soc/fsl/mpc5200_dma.c
+@@ -368,7 +368,7 @@
+ 	.pcm_free	= &psc_dma_free,
+ };
+ 
+-static int mpc5200_hpcd_probe(struct of_device *op)
++static int mpc5200_hpcd_probe(struct platform_device *op)
+ {
+ 	phys_addr_t fifo;
+ 	struct psc_dma *psc_dma;
+@@ -486,7 +486,7 @@
+ 	return ret;
+ }
+ 
+-static int mpc5200_hpcd_remove(struct of_device *op)
++static int mpc5200_hpcd_remove(struct platform_device *op)
+ {
+ 	struct psc_dma *psc_dma = dev_get_drvdata(&op->dev);
+ 
+@@ -518,7 +518,7 @@
+ static struct platform_driver mpc5200_hpcd_of_driver = {
+ 	.probe		= mpc5200_hpcd_probe,
+ 	.remove		= mpc5200_hpcd_remove,
+-	.dev = {
++	.driver = {
+ 		.owner		= THIS_MODULE,
+ 		.name		= "mpc5200-pcm-audio",
+ 		.of_match_table    = mpc5200_hpcd_match,

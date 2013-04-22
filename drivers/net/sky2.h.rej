@@ -1,0 +1,10 @@
+--- drivers/net/sky2.h
++++ drivers/net/sky2.h
+@@ -2236,7 +2236,6 @@
+ 	u16		     rx_pending;
+ 	u16		     rx_data_size;
+ 	u16		     rx_nfrags;
+-	u16		     rx_tag;
+ 
+ 	struct {
+ 		unsigned long last;

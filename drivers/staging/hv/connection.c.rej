@@ -1,0 +1,11 @@
+--- drivers/staging/hv/connection.c
++++ drivers/staging/hv/connection.c
+@@ -135,7 +135,7 @@
+ 	}
+ 
+ 	/* Wait for the connection response */
+-	t =  wait_for_completion_timeout(&msginfo->waitevent, HZ);
++	t =  wait_for_completion_timeout(&msginfo->waitevent, 5*HZ);
+ 	if (t == 0) {
+ 		spin_lock_irqsave(&vmbus_connection.channelmsg_lock,
+ 				flags);

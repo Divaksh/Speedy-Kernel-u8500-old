@@ -1,0 +1,13 @@
+--- drivers/tty/n_gsm.c
++++ drivers/tty/n_gsm.c
+@@ -1830,10 +1837,6 @@
+ 		break;
+ 	case GSM_FCS:		/* FCS follows the packet */
+ 		gsm->received_fcs = c;
+-		if (c == GSM0_SOF) {
+-			gsm->state = GSM_SEARCH;
+-			break;
+-		}
+ 		gsm_queue(gsm);
+ 		gsm->state = GSM_SSOF;
+ 		break;

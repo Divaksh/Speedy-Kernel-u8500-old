@@ -1,0 +1,14 @@
+--- drivers/net/wireless/ath/carl9170/main.c
++++ drivers/net/wireless/ath/carl9170/main.c
+@@ -1066,8 +1066,10 @@
+ 	 * the high througput speed in 802.11n networks.
+ 	 */
+ 
+-	if (!is_main_vif(ar, vif))
++	if (!is_main_vif(ar, vif)) {
++		mutex_lock(&ar->mutex);
+ 		goto err_softw;
++	}
+ 
+ 	/*
+ 	 * While the hardware supports *catch-all* key, for offloading

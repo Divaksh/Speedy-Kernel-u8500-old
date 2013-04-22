@@ -1,0 +1,10 @@
+--- virt/kvm/irq_comm.c
++++ virt/kvm/irq_comm.c
+@@ -318,7 +318,6 @@
+ 	 */
+ 	hlist_for_each_entry(ei, n, &rt->map[ue->gsi], link)
+ 		if (ei->type == KVM_IRQ_ROUTING_MSI ||
+-		    ue->type == KVM_IRQ_ROUTING_MSI ||
+ 		    ue->u.irqchip.irqchip == ei->irqchip.irqchip)
+ 			return r;
+ 

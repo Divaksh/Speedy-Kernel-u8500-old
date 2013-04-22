@@ -1,0 +1,11 @@
+--- include/linux/mfd/wm8994/pdata.h
++++ include/linux/mfd/wm8994/pdata.h
+@@ -26,7 +26,7 @@
+ 	struct regulator_init_data *init_data;
+ };
+ 
+-#define WM8994_CONFIGURE_GPIO 0x8000
++#define WM8994_CONFIGURE_GPIO 0x10000
+ 
+ #define WM8994_DRC_REGS 5
+ #define WM8994_EQ_REGS  20

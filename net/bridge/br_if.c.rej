@@ -1,0 +1,24 @@
+--- net/bridge/br_if.c
++++ net/bridge/br_if.c
+@@ -232,6 +233,7 @@
+ int br_add_bridge(struct net *net, const char *name)
+ {
+ 	struct net_device *dev;
++	int res;
+ 
+ 	dev = alloc_netdev(sizeof(struct net_bridge), name,
+ 			   br_dev_setup);
+@@ -240,8 +242,12 @@
+ 		return -ENOMEM;
+ 
+ 	dev_net_set(dev, net);
++	dev->rtnl_link_ops = &br_link_ops;
+ 
+-	return register_netdev(dev);
++	res = register_netdev(dev);
++	if (res)
++		free_netdev(dev);
++	return res;
+ }
+ 
+ int br_del_bridge(struct net *net, const char *name)

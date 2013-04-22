@@ -1,0 +1,19 @@
+--- drivers/mmc/core/core.c
++++ drivers/mmc/core/core.c
+@@ -1078,6 +1103,8 @@
+ 	host->ios.bus_width = MMC_BUS_WIDTH_1;
+ 	host->ios.timing = MMC_TIMING_LEGACY;
+ 	mmc_set_ios(host);
++
++	mmc_host_clk_release(host);
+ }
+ 
+ /*
+@@ -1792,6 +1817,7 @@
+ 				host->bus_ops->remove(host);
+ 			mmc_claim_host(host);
+ 			mmc_detach_bus(host);
++			mmc_power_off(host);
+ 			mmc_release_host(host);
+ 			host->pm_flags = 0;
+ 			err = 0;

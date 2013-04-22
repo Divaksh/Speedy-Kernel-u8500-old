@@ -1,0 +1,26 @@
+--- drivers/net/wireless/b43/main.c
++++ drivers/net/wireless/b43/main.c
+@@ -1571,7 +1571,8 @@
+ 	u32 cmd, beacon0_valid, beacon1_valid;
+ 
+ 	if (!b43_is_mode(wl, NL80211_IFTYPE_AP) &&
+-	    !b43_is_mode(wl, NL80211_IFTYPE_MESH_POINT))
++	    !b43_is_mode(wl, NL80211_IFTYPE_MESH_POINT) &&
++	    !b43_is_mode(wl, NL80211_IFTYPE_ADHOC))
+ 		return;
+ 
+ 	/* This is the bottom half of the asynchronous beacon update. */
+@@ -2400,6 +2401,13 @@
+ 		b43_print_fw_helptext(dev->wl, 1);
+ 		err = -EOPNOTSUPP;
+ 		goto error;
++	} else if (fwrev >= 598) {
++		b43err(dev->wl, "YOUR FIRMWARE IS TOO NEW. Support for "
++		       "firmware 598 and up requires kernel 3.2 or newer. You "
++		       "have to install older firmware or upgrade kernel.\n");
++		b43_print_fw_helptext(dev->wl, 1);
++		err = -EOPNOTSUPP;
++		goto error;
+ 	}
+ 	dev->fw.rev = fwrev;
+ 	dev->fw.patch = fwpatch;

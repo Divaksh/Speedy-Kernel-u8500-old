@@ -1,0 +1,12 @@
+--- drivers/md/multipath.c
++++ drivers/md/multipath.c
+@@ -514,8 +514,7 @@
+ {
+ 	multipath_conf_t *conf = mddev->private;
+ 
+-	md_unregister_thread(mddev->thread);
+-	mddev->thread = NULL;
++	md_unregister_thread(&mddev->thread);
+ 	blk_sync_queue(mddev->queue); /* the unplug fn references 'conf'*/
+ 	mempool_destroy(conf->pool);
+ 	kfree(conf->multipaths);

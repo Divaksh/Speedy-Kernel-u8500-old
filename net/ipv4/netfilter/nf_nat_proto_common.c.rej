@@ -1,0 +1,10 @@
+--- net/ipv4/netfilter/nf_nat_proto_common.c
++++ net/ipv4/netfilter/nf_nat_proto_common.c
+@@ -12,6 +12,7 @@
+ #include <linux/ip.h>
+ 
+ #include <linux/netfilter.h>
++#include <net/secure_seq.h>
+ #include <net/netfilter/nf_nat.h>
+ #include <net/netfilter/nf_nat_core.h>
+ #include <net/netfilter/nf_nat_rule.h>

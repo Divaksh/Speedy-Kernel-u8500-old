@@ -1,0 +1,11 @@
+--- net/netlink/genetlink.c
++++ net/netlink/genetlink.c
+@@ -526,7 +527,7 @@
+ 
+ 		genl_unlock();
+ 		err = netlink_dump_start(net->genl_sock, skb, nlh,
+-					 ops->dumpit, ops->done);
++					 ops->dumpit, ops->done, 0);
+ 		genl_lock();
+ 		return err;
+ 	}

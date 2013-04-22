@@ -1,0 +1,11 @@
+--- sound/core/pcm_compat.c
++++ sound/core/pcm_compat.c
+@@ -342,7 +342,7 @@
+ 			kfree(bufs);
+ 			return -EFAULT;
+ 		}
+-		bufs[ch] = compat_ptr(ptr);
++		bufs[i] = compat_ptr(ptr);
+ 		bufptr++;
+ 	}
+ 	if (dir == SNDRV_PCM_STREAM_PLAYBACK)

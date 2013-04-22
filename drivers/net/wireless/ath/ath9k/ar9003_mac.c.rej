@@ -1,0 +1,12 @@
+--- drivers/net/wireless/ath/ath9k/ar9003_mac.c
++++ drivers/net/wireless/ath/ath9k/ar9003_mac.c
+@@ -629,8 +629,7 @@
+ 			rxs->rs_status |= ATH9K_RXERR_DECRYPT;
+ 		else if (rxsp->status11 & AR_MichaelErr)
+ 			rxs->rs_status |= ATH9K_RXERR_MIC;
+-
+-		if (rxsp->status11 & AR_KeyMiss)
++		else if (rxsp->status11 & AR_KeyMiss)
+ 			rxs->rs_status |= ATH9K_RXERR_DECRYPT;
+ 	}
+ 

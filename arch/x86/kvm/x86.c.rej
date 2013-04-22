@@ -1,0 +1,10 @@
+--- arch/x86/kvm/x86.c
++++ arch/x86/kvm/x86.c
+@@ -4465,6 +4493,7 @@
+ 	.get_fpu             = emulator_get_fpu,
+ 	.put_fpu             = emulator_put_fpu,
+ 	.intercept           = emulator_intercept,
++	.get_cpuid           = emulator_get_cpuid,
+ };
+ 
+ static void cache_all_regs(struct kvm_vcpu *vcpu)

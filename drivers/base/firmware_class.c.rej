@@ -1,0 +1,14 @@
+--- drivers/base/firmware_class.c
++++ drivers/base/firmware_class.c
+@@ -521,11 +521,6 @@
+ 	if (!firmware_p)
+ 		return -EINVAL;
+ 
+-	if (WARN_ON(usermodehelper_is_disabled())) {
+-		dev_err(device, "firmware: %s will not be loaded\n", name);
+-		return -EBUSY;
+-	}
+-
+ 	*firmware_p = firmware = kzalloc(sizeof(*firmware), GFP_KERNEL);
+ 	if (!firmware) {
+ 		dev_err(device, "%s: kmalloc(struct firmware) failed\n",

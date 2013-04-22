@@ -1,0 +1,11 @@
+--- drivers/scsi/aacraid/commsup.c
++++ drivers/scsi/aacraid/commsup.c
+@@ -1283,6 +1283,8 @@
+ 	kfree(aac->queues);
+ 	aac->queues = NULL;
+ 	free_irq(aac->pdev->irq, aac);
++	if (aac->msi)
++		pci_disable_msi(aac->pdev);
+ 	kfree(aac->fsa_dev);
+ 	aac->fsa_dev = NULL;
+ 	quirks = aac_get_driver_ident(index)->quirks;

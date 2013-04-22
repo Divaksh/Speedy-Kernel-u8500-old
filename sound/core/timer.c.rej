@@ -1,0 +1,11 @@
+--- sound/core/timer.c
++++ sound/core/timer.c
+@@ -531,6 +531,8 @@
+ 	if (err < 0)
+ 		return err;
+ 	timer = timeri->timer;
++	if (!timer)
++		return -EINVAL;
+ 	spin_lock_irqsave(&timer->lock, flags);
+ 	timeri->cticks = timeri->ticks;
+ 	timeri->pticks = 0;

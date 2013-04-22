@@ -1,0 +1,11 @@
+--- sound/soc/samsung/jive_wm8750.c
++++ sound/soc/samsung/jive_wm8750.c
+@@ -131,7 +131,7 @@
+ 	.cpu_dai_name	= "s3c2412-i2s",
+ 	.codec_dai_name = "wm8750-hifi",
+ 	.platform_name	= "samsung-audio",
+-	.codec_name	= "wm8750-codec.0-0x1a",
++	.codec_name	= "wm8750-codec.0-001a",
+ 	.init		= jive_wm8750_init,
+ 	.ops		= &jive_ops,
+ };

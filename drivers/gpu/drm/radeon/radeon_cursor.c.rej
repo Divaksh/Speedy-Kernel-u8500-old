@@ -1,0 +1,14 @@
+--- drivers/gpu/drm/radeon/radeon_cursor.c
++++ drivers/gpu/drm/radeon/radeon_cursor.c
+@@ -237,11 +253,6 @@
+ 		int i = 0;
+ 		struct drm_crtc *crtc_p;
+ 
+-		/* avivo cursor are offset into the total surface */
+-		x += crtc->x;
+-		y += crtc->y;
+-		DRM_DEBUG("x %d y %d c->x %d c->y %d\n", x, y, crtc->x, crtc->y);
+-
+ 		/* avivo cursor image can't end on 128 pixel boundary or
+ 		 * go past the end of the frame if both crtcs are enabled
+ 		 */

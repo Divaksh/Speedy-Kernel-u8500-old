@@ -1,0 +1,20 @@
+--- arch/sparc/Kconfig
++++ arch/sparc/Kconfig
+@@ -53,6 +53,7 @@
+ 	select HAVE_PERF_EVENTS
+ 	select PERF_USE_VMALLOC
+ 	select IRQ_PREFLOW_FASTEOI
++	select HAVE_C_RECORDMCOUNT
+ 
+ config ARCH_DEFCONFIG
+ 	string
+@@ -589,6 +590,9 @@
+ 	depends on COMPAT && SYSVIPC
+ 	default y
+ 
++config KEYS_COMPAT
++	def_bool y if COMPAT && KEYS
++
+ endmenu
+ 
+ source "net/Kconfig"

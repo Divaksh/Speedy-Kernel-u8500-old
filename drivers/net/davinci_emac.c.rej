@@ -1,0 +1,11 @@
+--- drivers/net/davinci_emac.c
++++ drivers/net/davinci_emac.c
+@@ -1047,7 +1045,7 @@
+ 	struct net_device	*ndev = skb->dev;
+ 
+ 	if (unlikely(netif_queue_stopped(ndev)))
+-		netif_wake_queue(ndev);
++		netif_start_queue(ndev);
+ 	ndev->stats.tx_packets++;
+ 	ndev->stats.tx_bytes += len;
+ 	dev_kfree_skb_any(skb);

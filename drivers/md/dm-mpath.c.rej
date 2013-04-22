@@ -1,0 +1,27 @@
+--- drivers/md/dm-mpath.c
++++ drivers/md/dm-mpath.c
+@@ -807,6 +807,11 @@
+ 	if (!argc)
+ 		return 0;
+ 
++	if (argc > as->argc) {
++		ti->error = "not enough arguments for features";
++		return -EINVAL;
++	}
++
+ 	do {
+ 		param_name = shift(as);
+ 		argc--;
+@@ -1579,6 +1584,12 @@
+ 
+ 	spin_unlock_irqrestore(&m->lock, flags);
+ 
++	/*
++	 * Only pass ioctls through if the device sizes match exactly.
++	 */
++	if (!r && ti->len != i_size_read(bdev->bd_inode) >> SECTOR_SHIFT)
++		r = scsi_verify_blk_ioctl(NULL, cmd);
++
+ 	return r ? : __blkdev_driver_ioctl(bdev, mode, cmd, arg);
+ }
+ 

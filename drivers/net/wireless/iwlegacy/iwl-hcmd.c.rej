@@ -1,0 +1,11 @@
+--- drivers/net/wireless/iwlegacy/iwl-hcmd.c
++++ drivers/net/wireless/iwlegacy/iwl-hcmd.c
+@@ -167,7 +167,7 @@
+ 		goto out;
+ 	}
+ 
+-	ret = wait_event_interruptible_timeout(priv->wait_command_queue,
++	ret = wait_event_timeout(priv->wait_command_queue,
+ 			!test_bit(STATUS_HCMD_ACTIVE, &priv->status),
+ 			HOST_COMPLETE_TIMEOUT);
+ 	if (!ret) {

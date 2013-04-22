@@ -1,0 +1,22 @@
+--- fs/btrfs/tree-log.c
++++ fs/btrfs/tree-log.c
+@@ -801,14 +803,15 @@
+ 				  struct extent_buffer *eb, int slot,
+ 				  struct btrfs_key *key)
+ {
+-	struct inode *dir;
+-	int ret;
+ 	struct btrfs_inode_ref *ref;
++	struct btrfs_dir_item *di;
++	struct inode *dir;
+ 	struct inode *inode;
+-	char *name;
+-	int namelen;
+ 	unsigned long ref_ptr;
+ 	unsigned long ref_end;
++	char *name;
++	int namelen;
++	int ret;
+ 	int search_done = 0;
+ 
+ 	/*

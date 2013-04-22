@@ -1,0 +1,11 @@
+--- drivers/media/video/uvc/uvc_entity.c
++++ drivers/media/video/uvc/uvc_entity.c
+@@ -49,7 +49,7 @@
+ 		if (remote == NULL)
+ 			return -EINVAL;
+ 
+-		source = (UVC_ENTITY_TYPE(remote) != UVC_TT_STREAMING)
++		source = (UVC_ENTITY_TYPE(remote) == UVC_TT_STREAMING)
+ 		       ? (remote->vdev ? &remote->vdev->entity : NULL)
+ 		       : &remote->subdev.entity;
+ 		if (source == NULL)

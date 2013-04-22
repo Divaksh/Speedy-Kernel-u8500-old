@@ -1,0 +1,33 @@
+--- fs/ext4/mballoc.c
++++ fs/ext4/mballoc.c
+@@ -2813,8 +2812,8 @@
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi,
+ 							  ac->ac_b_ex.fe_group);
+-		atomic64_sub(ac->ac_b_ex.fe_len,
+-			     &sbi->s_flex_groups[flex_group].free_blocks);
++		atomic_sub(ac->ac_b_ex.fe_len,
++			   &sbi->s_flex_groups[flex_group].free_blocks);
+ 	}
+ 
+ 	err = ext4_handle_dirty_metadata(handle, NULL, bitmap_bh);
+@@ -4612,7 +4610,7 @@
+ 
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi, block_group);
+-		atomic64_add(count, &sbi->s_flex_groups[flex_group].free_blocks);
++		atomic_add(count, &sbi->s_flex_groups[flex_group].free_blocks);
+ 	}
+ 
+ 	ext4_mb_unload_buddy(&e4b);
+@@ -4743,8 +4741,8 @@
+ 
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi, block_group);
+-		atomic64_add(blocks_freed,
+-			     &sbi->s_flex_groups[flex_group].free_blocks);
++		atomic_add(blocks_freed,
++			   &sbi->s_flex_groups[flex_group].free_blocks);
+ 	}
+ 
+ 	ext4_mb_unload_buddy(&e4b);

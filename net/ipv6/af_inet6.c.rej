@@ -1,0 +1,11 @@
+--- net/ipv6/af_inet6.c
++++ net/ipv6/af_inet6.c
+@@ -1078,6 +1078,8 @@
+ 		goto out;
+ 	}
+ 
++	initialize_hashidentrnd();
++
+ 	err = proto_register(&tcpv6_prot, 1);
+ 	if (err)
+ 		goto out;

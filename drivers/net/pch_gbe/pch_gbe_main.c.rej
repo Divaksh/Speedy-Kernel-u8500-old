@@ -1,0 +1,14 @@
+--- drivers/net/pch_gbe/pch_gbe_main.c
++++ drivers/net/pch_gbe/pch_gbe_main.c
+@@ -1500,9 +1491,9 @@
+ 			skb_put(skb, length);
+ 			skb->protocol = eth_type_trans(skb, netdev);
+ 			if (tcp_ip_status & PCH_GBE_RXD_ACC_STAT_TCPIPOK)
++				skb->ip_summed = CHECKSUM_NONE;
++			else
+ 				skb->ip_summed = CHECKSUM_UNNECESSARY;
+-			else
+-				skb->ip_summed = CHECKSUM_NONE;
+ 
+ 			napi_gro_receive(&adapter->napi, skb);
+ 			(*work_done)++;

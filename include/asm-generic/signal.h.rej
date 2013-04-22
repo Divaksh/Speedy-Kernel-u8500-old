@@ -1,0 +1,13 @@
+--- include/asm-generic/signal.h
++++ include/asm-generic/signal.h
+@@ -99,10 +99,6 @@
+ 
+ #include <asm-generic/signal-defs.h>
+ 
+-#ifdef SA_RESTORER
+-#define __ARCH_HAS_SA_RESTORER
+-#endif
+-
+ struct sigaction {
+ 	__sighandler_t sa_handler;
+ 	unsigned long sa_flags;

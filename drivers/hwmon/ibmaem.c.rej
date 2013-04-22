@@ -1,0 +1,35 @@
+--- drivers/hwmon/ibmaem.c
++++ drivers/hwmon/ibmaem.c
+@@ -432,13 +432,15 @@
+ 	aem_send_message(ipmi);
+ 
+ 	res = wait_for_completion_timeout(&ipmi->read_complete, IPMI_TIMEOUT);
+-	if (!res)
+-		return -ETIMEDOUT;
++	if (!res) {
++		res = -ETIMEDOUT;
++		goto out;
++	}
+ 
+ 	if (ipmi->rx_result || ipmi->rx_msg_len != rs_size ||
+ 	    memcmp(&rs_resp->id, &system_x_id, sizeof(system_x_id))) {
+-		kfree(rs_resp);
+-		return -ENOENT;
++		res = -ENOENT;
++		goto out;
+ 	}
+ 
+ 	switch (size) {
+@@ -463,8 +465,11 @@
+ 		break;
+ 	}
+ 	}
++	res = 0;
+ 
+-	return 0;
++out:
++	kfree(rs_resp);
++	return res;
+ }
+ 
+ /* Update AEM energy registers */

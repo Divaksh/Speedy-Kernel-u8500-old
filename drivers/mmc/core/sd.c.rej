@@ -1,0 +1,20 @@
+--- drivers/mmc/core/sd.c
++++ drivers/mmc/core/sd.c
+@@ -351,9 +354,6 @@
+ 		}
+ 
+ 		card->sw_caps.sd3_curr_limit = status[7];
+-	} else {
+-		if (status[13] & 0x02)
+-			card->sw_caps.hs_max_dtr = 50000000;
+ 	}
+ 
+ out:
+@@ -1011,6 +1011,7 @@
+ 
+ 		mmc_claim_host(host);
+ 		mmc_detach_bus(host);
++		mmc_power_off(host);
+ 		mmc_release_host(host);
+ 	}
+ }

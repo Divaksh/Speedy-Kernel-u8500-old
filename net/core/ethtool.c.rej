@@ -1,0 +1,28 @@
+--- net/core/ethtool.c
++++ net/core/ethtool.c
+@@ -1227,7 +1227,7 @@
+ 		regs.len = reglen;
+ 
+ 	regbuf = vzalloc(reglen);
+-	if (!regbuf)
++	if (reglen && !regbuf)
+ 		return -ENOMEM;
+ 
+ 	ops->get_regs(dev, &regs, regbuf);
+@@ -1236,7 +1236,7 @@
+ 	if (copy_to_user(useraddr, &regs, sizeof(regs)))
+ 		goto out;
+ 	useraddr += offsetof(struct ethtool_regs, data);
+-	if (copy_to_user(useraddr, regbuf, regs.len))
++	if (regbuf && copy_to_user(useraddr, regbuf, regs.len))
+ 		goto out;
+ 	ret = 0;
+ 
+@@ -1964,6 +1964,7 @@
+ 	case ETHTOOL_GRXCSUM:
+ 	case ETHTOOL_GTXCSUM:
+ 	case ETHTOOL_GSG:
++	case ETHTOOL_GSSET_INFO:
+ 	case ETHTOOL_GSTRINGS:
+ 	case ETHTOOL_GTSO:
+ 	case ETHTOOL_GPERMADDR:

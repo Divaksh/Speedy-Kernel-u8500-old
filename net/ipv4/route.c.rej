@@ -1,0 +1,66 @@
+--- net/ipv4/route.c
++++ net/ipv4/route.c
+@@ -416,7 +421,13 @@
+ 			   "HHUptod\tSpecDst");
+ 	else {
+ 		struct rtable *r = v;
+-		int len;
++		struct neighbour *n;
++		int len, HHUptod;
++
++		rcu_read_lock();
++		n = dst_get_neighbour(&r->dst);
++		HHUptod = (n && (n->nud_state & NUD_CONNECTED)) ? 1 : 0;
++		rcu_read_unlock();
+ 
+ 		seq_printf(seq, "%s\t%08X\t%08X\t%8X\t%d\t%u\t%d\t"
+ 			      "%08X\t%d\t%u\t%u\t%02X\t%d\t%1d\t%08X%n",
+@@ -431,8 +442,7 @@
+ 			      dst_metric(&r->dst, RTAX_RTTVAR)),
+ 			r->rt_key_tos,
+ 			r->dst.hh ? atomic_read(&r->dst.hh->hh_refcnt) : -1,
+-			r->dst.hh ? (r->dst.hh->hh_output ==
+-				       dev_queue_xmit) : 0,
++			HHUptod,
+ 			r->rt_spec_dst, &len);
+ 
+ 		seq_printf(seq, "%*s\n", 127 - len, "");
+@@ -721,7 +731,7 @@
+ {
+ 	return ((((__force u32)rt1->rt_key_dst ^ (__force u32)rt2->rt_key_dst) |
+ 		((__force u32)rt1->rt_key_src ^ (__force u32)rt2->rt_key_src) |
+-		(rt1->rt_iif ^ rt2->rt_iif)) == 0);
++		(rt1->rt_route_iif ^ rt2->rt_route_iif)) == 0);
+ }
+ 
+ static inline int compare_keys(struct rtable *rt1, struct rtable *rt2)
+@@ -730,8 +740,8 @@
+ 		((__force u32)rt1->rt_key_src ^ (__force u32)rt2->rt_key_src) |
+ 		(rt1->rt_mark ^ rt2->rt_mark) |
+ 		(rt1->rt_key_tos ^ rt2->rt_key_tos) |
+-		(rt1->rt_oif ^ rt2->rt_oif) |
+-		(rt1->rt_iif ^ rt2->rt_iif)) == 0;
++		(rt1->rt_route_iif ^ rt2->rt_route_iif) |
++		(rt1->rt_oif ^ rt2->rt_oif)) == 0;
+ }
+ 
+ static inline int compare_netns(struct rtable *rt1, struct rtable *rt2)
+@@ -1838,7 +1978,7 @@
+ 		memset(&fl4, 0, sizeof(fl4));
+ 		fl4.daddr = iph->daddr;
+ 		fl4.saddr = iph->saddr;
+-		fl4.flowi4_tos = iph->tos;
++		fl4.flowi4_tos = RT_TOS(iph->tos);
+ 		fl4.flowi4_oif = rt->dst.dev->ifindex;
+ 		fl4.flowi4_iif = skb->dev->ifindex;
+ 		fl4.flowi4_mark = skb->mark;
+@@ -2415,8 +2555,7 @@
+ 	     rth = rcu_dereference(rth->dst.rt_next)) {
+ 		if ((((__force u32)rth->rt_key_dst ^ (__force u32)daddr) |
+ 		     ((__force u32)rth->rt_key_src ^ (__force u32)saddr) |
+-		     (rth->rt_iif ^ iif) |
+-		     rth->rt_oif |
++		     (rth->rt_route_iif ^ iif) |
+ 		     (rth->rt_key_tos ^ tos)) == 0 &&
+ 		    rth->rt_mark == skb->mark &&
+ 		    net_eq(dev_net(rth->dst.dev), net) &&

@@ -1,0 +1,18 @@
+--- fs/namei.c
++++ fs/namei.c
+@@ -2628,6 +2654,7 @@
+ 
+ out:
+ 	mutex_unlock(&dentry->d_inode->i_mutex);
++	dput(dentry);
+ 	if (!error)
+ 		d_delete(dentry);
+ 	return error;
+@@ -3052,6 +3080,7 @@
+ out:
+ 	if (target)
+ 		mutex_unlock(&target->i_mutex);
++	dput(new_dentry);
+ 	if (!error)
+ 		if (!(old_dir->i_sb->s_type->fs_flags & FS_RENAME_DOES_D_MOVE))
+ 			d_move(old_dentry,new_dentry);

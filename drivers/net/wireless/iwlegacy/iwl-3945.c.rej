@@ -1,0 +1,31 @@
+--- drivers/net/wireless/iwlegacy/iwl-3945.c
++++ drivers/net/wireless/iwlegacy/iwl-3945.c
+@@ -1747,7 +1747,11 @@
+ 		}
+ 
+ 		memcpy(active_rxon, staging_rxon, sizeof(*active_rxon));
+-
++		/*
++		 * We do not commit tx power settings while channel changing,
++		 * do it now if tx power changed.
++		 */
++		iwl_legacy_set_tx_power(priv, priv->tx_power_next, false);
+ 		return 0;
+ 	}
+ 
+@@ -1868,11 +1872,12 @@
+ 	struct iwl_priv *priv = container_of(work, struct iwl_priv,
+ 					     _3945.thermal_periodic.work);
+ 
+-	if (test_bit(STATUS_EXIT_PENDING, &priv->status))
+-		return;
+-
+ 	mutex_lock(&priv->mutex);
++	if (test_bit(STATUS_EXIT_PENDING, &priv->status) || priv->txq == NULL)
++		goto out;
++
+ 	iwl3945_reg_txpower_periodic(priv);
++out:
+ 	mutex_unlock(&priv->mutex);
+ }
+ 

@@ -1,0 +1,17 @@
+--- drivers/gpu/drm/ttm/ttm_bo_util.c
++++ drivers/gpu/drm/ttm/ttm_bo_util.c
+@@ -635,13 +635,13 @@
+ 		if (ret)
+ 			return ret;
+ 
+-		ttm_bo_free_old_node(bo);
+ 		if ((man->flags & TTM_MEMTYPE_FLAG_FIXED) &&
+ 		    (bo->ttm != NULL)) {
+ 			ttm_tt_unbind(bo->ttm);
+ 			ttm_tt_destroy(bo->ttm);
+ 			bo->ttm = NULL;
+ 		}
++		ttm_bo_free_old_node(bo);
+ 	} else {
+ 		/**
+ 		 * This should help pipeline ordinary buffer moves.

@@ -1,0 +1,13 @@
+--- drivers/net/wireless/rt2x00/rt2x00pci.c
++++ drivers/net/wireless/rt2x00/rt2x00pci.c
+@@ -52,8 +52,8 @@
+ 		udelay(REGISTER_BUSY_DELAY);
+ 	}
+ 
+-	printk_once(KERN_ERR "%s() Indirect register access failed: "
+-	      "offset=0x%.08x, value=0x%.08x\n", __func__, offset, *reg);
++	ERROR(rt2x00dev, "Indirect register access failed: "
++	      "offset=0x%.08x, value=0x%.08x\n", offset, *reg);
+ 	*reg = ~0;
+ 
+ 	return 0;

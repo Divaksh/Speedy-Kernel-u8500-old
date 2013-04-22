@@ -1,0 +1,14 @@
+--- drivers/staging/brcm80211/brcmsmac/wl_mac80211.c
++++ drivers/staging/brcm80211/brcmsmac/wl_mac80211.c
+@@ -449,11 +449,6 @@
+ 		wiphy_err(wiphy, "%s: qos enabled: %s (implement)\n", __func__,
+ 			  info->qos ? "true" : "false");
+ 	}
+-	if (changed & BSS_CHANGED_IDLE) {
+-		/* Idle changed for this BSS/interface */
+-		wiphy_err(wiphy, "%s: BSS idle: %s (implement)\n", __func__,
+-			  info->idle ? "true" : "false");
+-	}
+ 	return;
+ }
+ 

@@ -1,0 +1,16 @@
+--- net/ipv4/tcp_input.c
++++ net/ipv4/tcp_input.c
+@@ -2220,8 +2196,11 @@
+ 	if (tcp_is_reno(tp))
+ 		tcp_reset_reno_sack(tp);
+ 
+-	tp->undo_marker = tp->snd_una;
+-	if (how) {
++	if (!how) {
++		/* Push undo marker, if it was plain RTO and nothing
++		 * was retransmitted. */
++		tp->undo_marker = tp->snd_una;
++	} else {
+ 		tp->sacked_out = 0;
+ 		tp->fackets_out = 0;
+ 	}

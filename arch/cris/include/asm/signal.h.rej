@@ -1,0 +1,10 @@
+--- arch/cris/include/asm/signal.h
++++ arch/cris/include/asm/signal.h
+@@ -122,7 +122,6 @@
+ 	void (*sa_restorer)(void);
+ 	sigset_t sa_mask;		/* mask last for extensibility */
+ };
+-#define __ARCH_HAS_SA_RESTORER
+ 
+ struct k_sigaction {
+ 	struct sigaction sa;

@@ -1,0 +1,11 @@
+--- net/core/link_watch.c
++++ net/core/link_watch.c
+@@ -126,7 +126,7 @@
+ 		return;
+ 
+ 	/* It's already running which is good enough. */
+-	if (!cancel_delayed_work(&linkwatch_work))
++	if (!__cancel_delayed_work(&linkwatch_work))
+ 		return;
+ 
+ 	/* Otherwise we reschedule it again for immediate execution. */

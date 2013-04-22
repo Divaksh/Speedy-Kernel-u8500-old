@@ -1,0 +1,11 @@
+--- net/ipv4/ipmr.c
++++ net/ipv4/ipmr.c
+@@ -1806,7 +1816,7 @@
+ 	struct flowi4 fl4 = {
+ 		.daddr = iph->daddr,
+ 		.saddr = iph->saddr,
+-		.flowi4_tos = iph->tos,
++		.flowi4_tos = RT_TOS(iph->tos),
+ 		.flowi4_oif = rt->rt_oif,
+ 		.flowi4_iif = rt->rt_iif,
+ 		.flowi4_mark = rt->rt_mark,

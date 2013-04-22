@@ -1,0 +1,32 @@
+--- kernel/sched_rt.c
++++ kernel/sched_rt.c
+@@ -1038,7 +1038,7 @@
+ 	 */
+ 	if (curr && unlikely(rt_task(curr)) &&
+ 	    (curr->rt.nr_cpus_allowed < 2 ||
+-	     curr->prio < p->prio) &&
++	     curr->prio <= p->prio) &&
+ 	    (p->rt.nr_cpus_allowed > 1)) {
+ 		int target = find_lowest_rq(p);
+ 
+@@ -1390,6 +1390,11 @@
+ 	if (!next_task)
+ 		return 0;
+ 
++#ifdef __ARCH_WANT_INTERRUPTS_ON_CTXSW
++       if (unlikely(task_running(rq, next_task)))
++               return 0;
++#endif
++
+ retry:
+ 	if (unlikely(next_task == rq->curr)) {
+ 		WARN_ON(1);
+@@ -1569,7 +1574,7 @@
+ 	    p->rt.nr_cpus_allowed > 1 &&
+ 	    rt_task(rq->curr) &&
+ 	    (rq->curr->rt.nr_cpus_allowed < 2 ||
+-	     rq->curr->prio < p->prio))
++	     rq->curr->prio <= p->prio))
+ 		push_rt_tasks(rq);
+ }
+ 

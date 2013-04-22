@@ -1,0 +1,44 @@
+--- net/l2tp/l2tp_eth.c
++++ net/l2tp/l2tp_eth.c
+@@ -103,7 +103,7 @@
+ static void l2tp_eth_dev_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+-
++	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+ 	dev->netdev_ops		= &l2tp_eth_netdev_ops;
+ 	dev->destructor		= free_netdev;
+ }
+@@ -132,7 +132,7 @@
+ 		printk("\n");
+ 	}
+ 
+-	if (!pskb_may_pull(skb, sizeof(ETH_HLEN)))
++	if (!pskb_may_pull(skb, ETH_HLEN))
+ 		goto error;
+ 
+ 	secpath_reset(skb);
+@@ -167,6 +167,7 @@
+ 		if (dev) {
+ 			unregister_netdev(dev);
+ 			spriv->dev = NULL;
++			module_put(THIS_MODULE);
+ 		}
+ 	}
+ }
+@@ -254,6 +255,7 @@
+ 	if (rc < 0)
+ 		goto out_del_dev;
+ 
++	__module_get(THIS_MODULE);
+ 	/* Must be done after register_netdev() */
+ 	strlcpy(session->ifname, dev->name, IFNAMSIZ);
+ 
+@@ -267,6 +269,7 @@
+ 
+ out_del_dev:
+ 	free_netdev(dev);
++	spriv->dev = NULL;
+ out_del_session:
+ 	l2tp_session_delete(session);
+ out:

@@ -1,0 +1,12 @@
+--- net/x25/x25_link.c
++++ net/x25/x25_link.c
+@@ -90,9 +90,6 @@
+ 			break;
+ 
+ 		case X25_DIAGNOSTIC:
+-			if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 4))
+-				break;
+-
+ 			printk(KERN_WARNING "x25: diagnostic #%d - "
+ 			       "%02X %02X %02X\n",
+ 			       skb->data[3], skb->data[4],

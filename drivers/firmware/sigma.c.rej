@@ -1,0 +1,50 @@
+--- drivers/firmware/sigma.c
++++ drivers/firmware/sigma.c
+@@ -11,15 +11,37 @@
+ #include <linux/firmware.h>
+ #include <linux/kernel.h>
+ #include <linux/i2c.h>
++#include <linux/module.h>
+ #include <linux/sigma.h>
+ 
+-/* Return: 0==OK, <0==error, =1 ==no more actions */
++static size_t sigma_action_size(struct sigma_action *sa)
++{
++	size_t payload = 0;
++
++	switch (sa->instr) {
++	case SIGMA_ACTION_WRITEXBYTES:
++	case SIGMA_ACTION_WRITESINGLE:
++	case SIGMA_ACTION_WRITESAFELOAD:
++		payload = sigma_action_len(sa);
++		break;
++	default:
++		break;
++	}
++
++	payload = ALIGN(payload, 2);
++
++	return payload + sizeof(struct sigma_action);
++}
++
++/*
++ * Returns a negative error value in case of an error, 0 if processing of
++ * the firmware should be stopped after this action, 1 otherwise.
++ */
+ static int
+-process_sigma_action(struct i2c_client *client, struct sigma_firmware *ssfw)
++process_sigma_action(struct i2c_client *client, struct sigma_action *sa)
+ {
+-	struct sigma_action *sa = (void *)(ssfw->fw->data + ssfw->pos);
+ 	size_t len = sigma_action_len(sa);
+-	int ret = 0;
++	int ret;
+ 
+ 	pr_debug("%s: instr:%i addr:%#x len:%zu\n", __func__,
+ 		sa->instr, sa->addr, len);
+@@ -127,3 +163,5 @@
+ 	return ret;
+ }
+ EXPORT_SYMBOL(process_sigma_firmware);
++
++MODULE_LICENSE("GPL");

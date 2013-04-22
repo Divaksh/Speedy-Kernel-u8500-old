@@ -1,0 +1,11 @@
+--- net/ipv6/mcast.c
++++ net/ipv6/mcast.c
+@@ -1058,7 +1057,7 @@
+ 			break;
+ 		for (i=0; i<nsrcs; i++) {
+ 			/* skip inactive filters */
+-			if (pmc->mca_sfcount[MCAST_INCLUDE] ||
++			if (psf->sf_count[MCAST_INCLUDE] ||
+ 			    pmc->mca_sfcount[MCAST_EXCLUDE] !=
+ 			    psf->sf_count[MCAST_EXCLUDE])
+ 				continue;

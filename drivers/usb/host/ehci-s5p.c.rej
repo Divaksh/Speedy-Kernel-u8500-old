@@ -1,0 +1,10 @@
+--- drivers/usb/host/ehci-s5p.c
++++ drivers/usb/host/ehci-s5p.c
+@@ -86,6 +86,7 @@
+ 		goto fail_hcd;
+ 	}
+ 
++	s5p_ehci->hcd = hcd;
+ 	s5p_ehci->clk = clk_get(&pdev->dev, "usbhost");
+ 
+ 	if (IS_ERR(s5p_ehci->clk)) {

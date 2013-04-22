@@ -1,0 +1,13 @@
+--- drivers/md/linear.h
++++ drivers/md/linear.h
+@@ -10,9 +10,9 @@
+ 
+ struct linear_private_data
+ {
++	struct rcu_head		rcu;
+ 	sector_t		array_sectors;
+ 	dev_info_t		disks[0];
+-	struct rcu_head		rcu;
+ };
+ 
+ 
