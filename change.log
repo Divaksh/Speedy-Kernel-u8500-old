@@ -1,0 +1,84 @@
+[SIZE="5"][COLOR="DarkRed"][B]Download:[/B][/COLOR][/SIZE] 
+
+[LIST]
+[*][SIZE="4"][B]Speedy Kernel v5.0 : [/B] [URL="http://www.mediafire.com/download.php?iaz2p3o4madeslc"]Non OC[/URL] || [URL="http://www.mediafire.com/download.php?7cn32c6yc6wuchd"]OC version[/URL][/SIZE]
+[/LIST]
+
+[COLOR="DarkRed"][SIZE="5"][B]Change Log:[/B][/SIZE][/COLOR]
+
+[SIZE="4"][B]Speedy Kernel v5.0[/B] (19-04-2013)[/SIZE]
+[LIST]
+[*][B]+[/B] Updated to latest Linux Kernel Source Code: 3.0.74
+[*][B]+[/B] Stock Version - Initial Release.
+[*][B]+[/B] AROMA installer (stock only)
+[*][B]+[/B] OC and NON OC version.
+[*][B]+[/B] Enable ARCH_POWER
+[*][B]+[/B] Added Frandom
+[*][B]+[/B] 5GHz band support
+[*][B]*[/B] ZEN added back.
+[*][B]*[/B] Signal loss fixed.
+[*][B]*[/B] OTG fixed (not tested)
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v4.2[/B] (16-04-2013)[/SIZE]
+[LIST]
+[*][B]*[/B] WiFi fixed.
+[*][B]+[/B] Enabled 80211 and WL12XX 
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v4.1[/B] (15-04-2013)[/SIZE]
+[LIST]
+[*][B]+[/B] Updated to latest Linux Kernel Source Code: 3.0.73
+[*][B]+[/B] Compliled using default CM configuration.  
+[*][B]*[/B] Auto change max freq fixed(not sure)
+[*][B]*[/B] Improved battery life.
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v4.0[/B] (14-04-2013)[/SIZE]
+[LIST]
+[*][B]+[/B] Updated to latest Linux Kernel Source Code: 3.0.71
+[*][B]+[/B] LINARO optimized
+[*][B]+[/B] Compiled Using Linaro 4.7
+[*][B]+[/B] OndemandQ governer
+[*][B]*[/B] Android OS battery fix
+[*][B]+[/B] Improved performance
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v3.0[/B] (29-03-2013)[/SIZE]
+[LIST]
+[*][B]+[/B] Governers (Dynamic Interactive, Adaptive)
+[*][B]*[/B] Final fix for auto freq change.
+[*][B]*[/B] Final fix governer(Lazy, Sakuractive, OndemandX)
+[*][B]*[/B] OndemandX input.
+[*][B]-[/B] Extra bytes from cmdline.
+[*][B]-[/B] Governers (Lulzactive, OndemandQ)
+[*][B]+[/B] Stability and Speed.
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v2.1[/B] (27-03-2013)[/SIZE]
+[LIST]
+[*][B]*[/B] Superuser Permissions.
+[*][B]*[/B] OndemandX Input.
+[*][B]=[/B] Recovery input button for Xperia P(Now Volume UP).
+[*][B]+[/B] External SD support in Recovery Xperia Sola.
+[*][B]+[/B] Governer(Sakuractive).
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v2.0[/B] (26-03-2013)[/SIZE]
+[LIST]
+[*][B]*[/B] Auto freq scaling change.
+[*][B]+[/B] CWM touch recovery. 
+[*][B]+[/B] Governers(InteractiveX, LulzactiveQ, Lazy)
+[*][B]+[/B] Stability and Speed.
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v1.2[/B] (23-03-2013)[/SIZE]
+[LIST]
+[*][B]+[/B] IO Schedulers(VR,SIO,Row,Zen)
+[*][B]=[/B] Bootsplash- New SONY make.believe
+[/LIST]
+
+[SIZE="4"][B]Speedy Kernel v1.0[/B] (22-03-2013) - My First Kernel :D[/SIZE]
+[LIST][*]Initial release.[/LIST]
+
+[B]+[/B] Added || [B]=[/B] Replaced || [B]-[/B] Removed || [B]*[/B] Fixed.
